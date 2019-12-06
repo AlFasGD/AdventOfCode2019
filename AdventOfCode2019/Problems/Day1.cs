@@ -18,8 +18,7 @@ namespace AdventOfCode2019.Problems
         private int General(Func<int, int> summer)
         {
             int sum = 0;
-            string line;
-            while ((line = Console.ReadLine()).Length > 0)
+            foreach (var line in FileLines)
                 sum += summer(Convert.ToInt32(line));
             return sum;
         }
