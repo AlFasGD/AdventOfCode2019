@@ -30,7 +30,7 @@ namespace AdventOfCode2019.Problems
 
         private int General(GeneralFunction generalFunction)
         {
-            var paths = FileContents.Split('\n');
+            var paths = FileLines;
 
             var lines0 = InitializeLines(0);
             var lines1 = InitializeLines(1);

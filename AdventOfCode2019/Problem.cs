@@ -5,6 +5,7 @@ namespace AdventOfCode2019
     public abstract class Problem<T>
     {
         protected readonly string FileContents;
+        protected string[] FileLines => FileContents.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
 
         public int Day => int.Parse(GetType().Name.Substring("Day".Length));
 
