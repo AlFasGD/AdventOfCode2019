@@ -2,7 +2,7 @@
 
 namespace AdventOfCode2019
 {
-    public abstract class Problem<T>
+    public abstract class Problem<T1, T2>
     {
         protected readonly string FileContents;
         protected string[] FileLines => FileContents.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
@@ -11,7 +11,8 @@ namespace AdventOfCode2019
 
         public Problem() => FileContents = File.ReadAllText($"AoC2019/{Day}.txt");
 
-        public abstract T RunPart1();
-        public abstract T RunPart2();
+        public abstract T1 RunPart1();
+        public abstract T2 RunPart2();
     }
+    public abstract class Problem<T> : Problem<T, T> { }
 }
