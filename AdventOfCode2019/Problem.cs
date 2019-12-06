@@ -6,7 +6,7 @@ namespace AdventOfCode2019
     {
         protected readonly string FileContents;
 
-        public abstract int Day { get; }
+        public int Day => int.Parse(GetType().Name.Substring("Day".Length));
 
         public Problem() => FileContents = File.ReadAllText($"AoC2019/{Day}.txt");
 

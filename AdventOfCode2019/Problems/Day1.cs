@@ -4,8 +4,6 @@ namespace AdventOfCode2019.Problems
 {
     public class Day1 : Problem<int>
     {
-        public override int Day => 1;
-
         public override int RunPart1() => General(Part1Summer);
         public override int RunPart2() => General(Part2Summer);
 

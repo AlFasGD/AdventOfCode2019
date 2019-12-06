@@ -8,8 +8,6 @@ namespace AdventOfCode2019.Problems
 {
     public class Day3 : Problem<int>
     {
-        public override int Day => 3;
-
         public override int RunPart1() => General(Part1GeneralFunction);
         public override int RunPart2() => General(Part2GeneralFunction);
 
