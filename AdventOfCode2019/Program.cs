@@ -7,7 +7,22 @@ namespace AdventOfCode2019
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine(new Day9().RunPart2());
+            RunProblem(new Day10());
+        }
+
+        private static void RunProblem<T1, T2>(Problem<T1, T2> instance)
+        {
+            int testCases = instance.TestCaseFiles;
+            for (int i = 1; i <= testCases; i++)
+            {
+                Console.WriteLine($"Running test case {i}");
+                Console.WriteLine(instance.TestRunPart1(i));
+                Console.WriteLine(instance.TestRunPart2(i));
+                Console.WriteLine();
+            }
+            Console.WriteLine("Running problem");
+            Console.WriteLine(instance.RunPart1());
+            Console.WriteLine(instance.RunPart2());
         }
     }
 }
