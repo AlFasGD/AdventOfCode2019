@@ -48,8 +48,6 @@ namespace AdventOfCode2019.Problems
             }
 
             sorted.Sort();
-            for (int i = 0; i < 200; i++)
-                Console.WriteLine($"{i + 1} is {sorted[i].Location} ({sorted[i].Angle}°)");
             var l = sorted[199].Location;
             return l.X * 100 + l.Y;
         }
