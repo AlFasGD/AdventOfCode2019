@@ -1,5 +1,4 @@
 ﻿using AdventOfCode2019.Utilities;
-using System;
 using System.Linq;
 using System.Numerics;
 

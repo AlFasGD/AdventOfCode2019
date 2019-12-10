@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdventOfCode2019.Utilities;
+using System;
 using static System.Convert;
 
 namespace AdventOfCode2019.Problems
@@ -41,23 +42,9 @@ namespace AdventOfCode2019.Problems
             numbersOriginal.CopyTo(numbers, 0);
             numbers[1] = noun;
             numbers[2] = verb;
-            for (int i = 0; i < numbers.Length; i += 4)
-            {
-                if (numbers[i] == 99)
-                    break;
-                numbers[numbers[i + 3]] = GetResult();
-
-                int GetResult()
-                {
-                    return (numbers[i]) switch
-                    {
-                        1 => numbers[numbers[i + 1]] + numbers[numbers[i + 2]],
-                        2 => numbers[numbers[i + 1]] * numbers[numbers[i + 2]],
-                        _ => throw new Exception(),
-                    };
-                }
-            }
-            return postRunner(noun, verb, numbers[0]);
+            var com = new IntcodeComputer(numbers);
+            com.RunToHalt();
+            return postRunner(noun, verb, (int)com.GetMemoryAt(0));
         }
         public int RunPart(GeneralRunner runner)
         {
