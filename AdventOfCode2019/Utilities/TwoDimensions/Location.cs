@@ -11,6 +11,10 @@ namespace AdventOfCode2019.Utilities.TwoDimensions
         public bool IsCenter => (X | Y) == 0;
         public int ManhattanDistanceFromCenter => Abs(X) + Abs(Y);
 
+        public Location InvertX => (-X, Y);
+        public Location InvertY => (X, -Y);
+        public Location Transpose => (Y, X);
+
         public Location(int x, int y) => (X, Y) = (x, y);
         public Location((int, int) point) => (X, Y) = point;
 
@@ -30,7 +34,14 @@ namespace AdventOfCode2019.Utilities.TwoDimensions
         }
         public double GetSlopeDegrees(Location other) => ToDegrees(GetSlopeRadians(other));
 
-        public void Deconstruct(out int x, out int y) => (x, y) = this;
+        public void Forward(Direction d, bool invertX = false, bool invertY = false) => Forward(d, 1, invertX, invertY);
+        public void Forward(Direction d, int moves, bool invertX = false, bool invertY = false) => this += new DirectionalLocation(d, invertX, invertY).LocationOffset * moves;
+
+        public void Deconstruct(out int x, out int y)
+        {
+            x = X;
+            y = Y;
+        }
 
         public static implicit operator Location((int X, int Y) point) => new Location(point);
         public static implicit operator (int X, int Y)(Location point) => (point.X, point.Y);

@@ -13,9 +13,28 @@ namespace AdventOfCode2019.Utilities.TwoDimensions
         };
 
         public Direction Direction;
-        public Location LocationOffset => locations[Direction];
+        public Location LocationOffset
+        {
+            get
+            {
+                var l = locations[Direction];
+                if (InvertX)
+                    l = l.InvertX;
+                if (InvertY)
+                    l = l.InvertY;
+                return l;
+            }
+        }
+        
+        public bool InvertX { get; set; }
+        public bool InvertY { get; set; }
 
-        public DirectionalLocation(Direction d) => Direction = d;
+        public DirectionalLocation(Direction d, bool invertX = false, bool invertY = false)
+        {
+            Direction = d;
+            InvertX = invertX;
+            InvertY = invertY;
+        }
 
         public static DirectionalLocation Parse(char direction)
         {
