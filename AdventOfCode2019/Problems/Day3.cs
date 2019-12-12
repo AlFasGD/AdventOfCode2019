@@ -11,13 +11,13 @@ namespace AdventOfCode2019.Problems
 
         private void Part1GeneralFunction(ref int min, Line l0, Line l1)
         {
-            Location? intersection;
+            Location2D? intersection;
             if ((intersection = l0.GetIntersectionWith(l1)).HasValue && intersection.Value.ManhattanDistanceFromCenter < min)
                 min = intersection.Value.ManhattanDistanceFromCenter;
         }
         private void Part2GeneralFunction(ref int min, Line l0, Line l1)
         {
-            Location? intersection;
+            Location2D? intersection;
             if ((intersection = l0.GetIntersectionWith(l1)).HasValue)
             {
                 int totalSteps = l0.GetTotalStepsToLocation(intersection.Value) + l1.GetTotalStepsToLocation(intersection.Value);

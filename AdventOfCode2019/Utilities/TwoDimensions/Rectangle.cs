@@ -2,7 +2,7 @@
 {
     public struct Rectangle
     {
-        public Location TopLeft, TopRight, BottomLeft, BottomRight;
+        public Location2D TopLeft, TopRight, BottomLeft, BottomRight;
 
         public Rectangle(int minX, int maxX, int minY, int maxY)
         {
@@ -11,6 +11,6 @@
             BottomLeft = (minX, minY);
             BottomRight = (maxX, minY);
         }
-        public Rectangle(Location topLeft, Location topRight, Location bottomLeft, Location bottomRight) => (TopLeft, TopRight, BottomLeft, BottomRight) = (topLeft, topRight, bottomLeft, bottomRight);
+        public Rectangle(Location2D topLeft, Location2D topRight, Location2D bottomLeft, Location2D bottomRight) => (TopLeft, TopRight, BottomLeft, BottomRight) = (topLeft, topRight, bottomLeft, bottomRight);
     }
 }

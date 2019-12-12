@@ -11,12 +11,12 @@ namespace AdventOfCode2019.Problems
         public override int RunPart1() => General(Part1GeneralFunction);
         public override int RunPart2() => General(Part2GeneralFunction);
 
-        private int Part1GeneralFunction(bool[,] asteroids, bool[,] bestSolution, int asteroidCount, int maxVisibleAsteroids, Location bestLocation, int width, int height)
+        private int Part1GeneralFunction(bool[,] asteroids, bool[,] bestSolution, int asteroidCount, int maxVisibleAsteroids, Location2D bestLocation, int width, int height)
         {
             PrintGrid(bestSolution, bestLocation, width, height);
             return maxVisibleAsteroids;
         }
-        private int Part2GeneralFunction(bool[,] asteroids, bool[,] bestSolution, int asteroidCount, int maxVisibleAsteroids, Location bestLocation, int width, int height)
+        private int Part2GeneralFunction(bool[,] asteroids, bool[,] bestSolution, int asteroidCount, int maxVisibleAsteroids, Location2D bestLocation, int width, int height)
         {
             PrintGrid(asteroids, bestLocation, width, height);
             if (asteroidCount < 200)
@@ -29,7 +29,7 @@ namespace AdventOfCode2019.Problems
                 for (int y = 0; y < height; y++)
                     if (asteroids[x, y])
                     {
-                        var location = new Location(x, y);
+                        var location = new Location2D(x, y);
                         var degrees = AddDegrees(bestLocation.GetSlopeDegrees(location), -90);
 
                         var slopedLocation = new SlopedLocation(location, degrees, bestLocation);
@@ -125,7 +125,7 @@ namespace AdventOfCode2019.Problems
             return generalFunction(asteroids, bestSolution, asteroidCount, maxVisibleAsteroids, (bestSolutionX, bestSolutionY), width, height);
         }
 
-        private static void PrintGrid(bool[,] grid, Location bestSolution, int width, int height)
+        private static void PrintGrid(bool[,] grid, Location2D bestSolution, int width, int height)
         {
             for (int y = 0; y < height; y++)
             {
@@ -145,20 +145,20 @@ namespace AdventOfCode2019.Problems
         }
         private static bool IsValidIndex(int value, int upperBound) => value >= 0 && value < upperBound;
 
-        private delegate int GeneralFunction(bool[,] asteroids, bool[,] bestSolution, int asteroidCount, int maxVisibleAsteroids, Location bestLocation, int width, int height);
+        private delegate int GeneralFunction(bool[,] asteroids, bool[,] bestSolution, int asteroidCount, int maxVisibleAsteroids, Location2D bestLocation, int width, int height);
 
         private class SlopedLocation : IComparable<SlopedLocation>
         {
             private const double epsilon = 0.0000001;
 
-            public Location Location { get; }
+            public Location2D Location { get; }
             public double Angle { get; private set; }
             public int ManhattanDistance { get; }
 
             public double AbsoluteAngle => Angle % FullCircleDegrees;
 
-            public SlopedLocation(Location location, double angle, int manhattanDistance) => (Location, Angle, ManhattanDistance) = (location, angle, manhattanDistance);
-            public SlopedLocation(Location location, double angle, Location other) : this(location, angle, location.ManhattanDistance(other)) { }
+            public SlopedLocation(Location2D location, double angle, int manhattanDistance) => (Location, Angle, ManhattanDistance) = (location, angle, manhattanDistance);
+            public SlopedLocation(Location2D location, double angle, Location2D other) : this(location, angle, location.ManhattanDistance(other)) { }
 
             public void AddFullCircleRotations(int count)
             {

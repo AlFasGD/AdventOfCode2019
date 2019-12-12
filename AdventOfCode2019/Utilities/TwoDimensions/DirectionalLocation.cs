@@ -4,7 +4,7 @@ namespace AdventOfCode2019.Utilities.TwoDimensions
 {
     public struct DirectionalLocation
     {
-        private static Dictionary<Direction, Location> locations = new Dictionary<Direction, Location>
+        private static Dictionary<Direction, Location2D> locations = new Dictionary<Direction, Location2D>
         {
             { Direction.Up, (0, 1) },
             { Direction.Down, (0, -1) },
@@ -13,7 +13,7 @@ namespace AdventOfCode2019.Utilities.TwoDimensions
         };
 
         public Direction Direction;
-        public Location LocationOffset
+        public Location2D LocationOffset
         {
             get
             {

@@ -19,8 +19,8 @@ namespace AdventOfCode2019.Problems
         public override int RunPart1() => General(Part1GeneralFunction, Part1Returner);
         public override string RunPart2() => General(Part2GeneralFunction, Part2Returner);
 
-        private void Part1GeneralFunction(PanelColor[,] grid, Location startingLocation) { }
-        private void Part2GeneralFunction(PanelColor[,] grid, Location startingLocation)
+        private void Part1GeneralFunction(PanelColor[,] grid, Location2D startingLocation) { }
+        private void Part2GeneralFunction(PanelColor[,] grid, Location2D startingLocation)
         {
             var (x, y) = startingLocation;
             grid[x, y] = PanelColor.White;
@@ -46,7 +46,7 @@ namespace AdventOfCode2019.Problems
                 for (int y = 0; y < gridSize; y++)
                     grid[x, y] = PanelColor.Untouched;
 
-            var currentLocation = new Location(gridSize / 2, gridSize / 2);
+            var currentLocation = new Location2D(gridSize / 2, gridSize / 2);
             var currentDirection = Direction.Up;
             int currentDirectionIndex = 0;
             int paintedPanels = 0;
@@ -86,7 +86,7 @@ namespace AdventOfCode2019.Problems
                 currentDirectionIndex = (currentDirectionIndex + offset + 4) % 4;
                 currentDirection = orderedDirections[currentDirectionIndex];
             }
-            void PaintPanel(Location location, PanelColor color)
+            void PaintPanel(Location2D location, PanelColor color)
             {
                 var (x, y) = location;
                 if (grid[x, y].HasFlag(PanelColor.Untouched))
@@ -102,7 +102,7 @@ namespace AdventOfCode2019.Problems
             Untouched = 1 << 2,
         }
 
-        private delegate void GeneralFunction(PanelColor[,] grid, Location startingLocation);
+        private delegate void GeneralFunction(PanelColor[,] grid, Location2D startingLocation);
         private delegate T Returner<T>(int paintedPanels, PanelColor[,] grid);
     }
 }
