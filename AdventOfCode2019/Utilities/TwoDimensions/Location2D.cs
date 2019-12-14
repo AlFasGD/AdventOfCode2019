@@ -22,6 +22,7 @@ namespace AdventOfCode2019.Utilities.TwoDimensions
         IHasX IHasX.InvertX => InvertX;
         IHasY IHasY.InvertY => InvertY;
 
+        public Location2D(int a) => X = Y = a;
         public Location2D(int x, int y) => (X, Y) = (x, y);
         public Location2D((int, int) point) => (X, Y) = point;
 

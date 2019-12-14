@@ -47,10 +47,9 @@ namespace AdventOfCode2019.Utilities
         public IntcodeComputer(string s)
         {
             var code = s.Split(',');
-            var numbers = new BigInteger[code.Length];
+            memory = new BigInteger[code.Length];
             for (int i = 0; i < code.Length; i++)
-                numbers[i] = BigInteger.Parse(code[i]);
-            memory = numbers;
+                memory[i] = BigInteger.Parse(code[i]);
         }
 
         public BigInteger RunToHalt(BigInteger[] m = null, params BigInteger[] inputBuffer) => Run(false, m, inputBuffer);
@@ -159,6 +158,9 @@ namespace AdventOfCode2019.Utilities
         public void BufferInput(BigInteger input) => buffer.Add(input);
 
         public BigInteger GetMemoryAt(int address) => numbers[address];
+        public void SetMemoryAt(int address, BigInteger value) => numbers[address] = value;
+        public BigInteger GetStaticMemoryAt(int address) => memory[address];
+        public void SetStaticMemoryAt(int address, BigInteger value) => memory[address] = value;
 
         private BigInteger ReadInput()
         {
