@@ -11,28 +11,28 @@ namespace AdventOfCode2019.Problems
         public override int RunPart1() => General(Part1GeneralFunction);
         public override int RunPart2() => General(Part2GeneralFunction);
 
-        private int Part1GeneralFunction(bool[,] asteroids, bool[,] bestSolution, int asteroidCount, int maxVisibleAsteroids, Location2D bestLocation, int width, int height)
+        private int Part1GeneralFunction(AsteroidGrid asteroids, AsteroidGrid bestSolution, int asteroidCount, int maxVisibleAsteroids)
         {
-            PrintGrid(bestSolution, bestLocation, width, height);
+            bestSolution.PrintGrid();
             return maxVisibleAsteroids;
         }
-        private int Part2GeneralFunction(bool[,] asteroids, bool[,] bestSolution, int asteroidCount, int maxVisibleAsteroids, Location2D bestLocation, int width, int height)
+        private int Part2GeneralFunction(AsteroidGrid asteroids, AsteroidGrid bestSolution, int asteroidCount, int maxVisibleAsteroids)
         {
-            PrintGrid(asteroids, bestLocation, width, height);
+            asteroids.PrintGrid();
             if (asteroidCount < 200)
                 return 0;
 
-            asteroids[bestLocation.X, bestLocation.Y] = false;
+            asteroids.SetBestLocation(false);
 
             var sorted = new List<SlopedLocation>();
-            for (int x = 0; x < width; x++)
-                for (int y = 0; y < height; y++)
+            for (int x = 0; x < asteroids.Width; x++)
+                for (int y = 0; y < asteroids.Height; y++)
                     if (asteroids[x, y])
                     {
                         var location = new Location2D(x, y);
-                        var degrees = AddDegrees(bestLocation.GetSlopeDegrees(location), -90);
+                        var degrees = AddDegrees(asteroids.BestLocation.GetSlopeDegrees(location), -90);
 
-                        var slopedLocation = new SlopedLocation(location, degrees, bestLocation);
+                        var slopedLocation = new SlopedLocation(location, degrees, asteroids.BestLocation);
 
                         sorted.Add(slopedLocation);
                     }
@@ -59,7 +59,7 @@ namespace AdventOfCode2019.Problems
             int height = lines.Length;
             int width = lines[0].Length;
 
-            var asteroids = new bool[width, height];
+            var asteroids = new AsteroidGrid(width, height);
             int asteroidCount = 0;
 
             for (int x = 0; x < width; x++)
@@ -69,9 +69,8 @@ namespace AdventOfCode2019.Problems
 
             int maxVisibleAsteroids = 0;
 
-            bool[,] bestSolution = new bool[0, 0];
-            int bestSolutionX = 0;
-            int bestSolutionY = 0;
+            var bestSolution = new AsteroidGrid(0, 0);
+            Location2D bestLocation = (0, 0);
 
             for (int x = 0; x < width; x++)
                 for (int y = 0; y < height; y++)
@@ -81,7 +80,7 @@ namespace AdventOfCode2019.Problems
 
                     int visibleAsteroidCount = asteroidCount - 1;
 
-                    var currentlyVisibleAsteroids = new bool[width, height];
+                    var currentlyVisibleAsteroids = new AsteroidGrid(width, height);
                     for (int x0 = 0; x0 < width; x0++)
                         for (int y0 = 0; y0 < height; y0++)
                             currentlyVisibleAsteroids[x0, y0] = asteroids[x0, y0];
@@ -116,36 +115,19 @@ namespace AdventOfCode2019.Problems
                     if (visibleAsteroidCount > maxVisibleAsteroids)
                     {
                         bestSolution = currentlyVisibleAsteroids;
-                        bestSolutionX = x;
-                        bestSolutionY = y;
+                        bestLocation = (x, y);
                         maxVisibleAsteroids = visibleAsteroidCount;
                     }
                 }
 
-            return generalFunction(asteroids, bestSolution, asteroidCount, maxVisibleAsteroids, (bestSolutionX, bestSolutionY), width, height);
+            bestSolution.BestLocation = asteroids.BestLocation = bestLocation;
+
+            return generalFunction(asteroids, bestSolution, asteroidCount, maxVisibleAsteroids);
         }
 
-        private static void PrintGrid(bool[,] grid, Location2D bestSolution, int width, int height)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    if ((x, y) == bestSolution)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.Write('#');
-                        Console.ResetColor();
-                        continue;
-                    }
-                    Console.Write(grid[x, y] ? '#' : '.');
-                }
-                Console.WriteLine();
-            }
-        }
         private static bool IsValidIndex(int value, int upperBound) => value >= 0 && value < upperBound;
 
-        private delegate int GeneralFunction(bool[,] asteroids, bool[,] bestSolution, int asteroidCount, int maxVisibleAsteroids, Location2D bestLocation, int width, int height);
+        private delegate int GeneralFunction(AsteroidGrid asteroids, AsteroidGrid bestSolution, int asteroidCount, int maxVisibleAsteroids);
 
         private class SlopedLocation : IComparable<SlopedLocation>
         {
@@ -176,6 +158,41 @@ namespace AdventOfCode2019.Problems
             }
 
             public override string ToString() => $"{Location} - {Angle}° - {ManhattanDistance}";
+        }
+
+        private sealed class AsteroidGrid : PrintableGrid<bool>
+        {
+            public Location2D BestLocation;
+
+            public AsteroidGrid(int width, int height) : base(width, height) { }
+
+            protected override Dictionary<bool, char> GetPrintableCharacters()
+            {
+                return new Dictionary<bool, char>
+                {
+                    { false, '.' },
+                    { true, '#' },
+                };
+            }
+
+            public void SetBestLocation(bool value) => this[BestLocation] = value;
+
+            public override void PrintGrid()
+            {
+                for (int y = 0; y < Height; y++)
+                    for (int x = 0; x < Width; x++)
+                    {
+                        if ((x, y) == BestLocation)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.Write('#');
+                            Console.ResetColor();
+                            continue;
+                        }
+                        Console.Write(Grid[x, y] ? '#' : '.');
+                    }
+                    Console.WriteLine();
+            }
         }
     }
 }

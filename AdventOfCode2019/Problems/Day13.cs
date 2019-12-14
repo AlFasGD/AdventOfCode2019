@@ -3,14 +3,11 @@ using AdventOfCode2019.Utilities.TwoDimensions;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 
 namespace AdventOfCode2019.Problems
 {
     public class Day13 : Problem<int>
     {
-        private const int gridSize = 10000;
-
         public override int RunPart1() => General(Part1GeneralFunction, Part1Returner);
         public override int RunPart2() => General(Part2GeneralFunction, Part2Returner);
 
@@ -24,7 +21,7 @@ namespace AdventOfCode2019.Problems
         {
             int startingRow = Console.CursorTop;
 
-            var grid = new TileType[gridSize, gridSize];
+            var grid = new GameGrid(50, 25);
             int outputs = 0;
             bool gameStarted = false;
 
@@ -56,30 +53,13 @@ namespace AdventOfCode2019.Problems
             BigInteger InputRequested()
             {
                 gameStarted = true;
-
                 PrintGrid();
-
                 var newBallLocation = currentBallLocation + currentBallVelocity;
-
-                int paddleMovement = currentBallLocation.X.CompareTo(currentPaddleLocation.X);
-
-                return paddleMovement;
-
-                void CheckBoundary(int x, int y, Location2D newVelocity)
-                {
-                    if (grid[x, y] > TileType.Empty)
-                    {
-                        if (grid[x, y] == TileType.Block)
-                            grid[x, y] = TileType.Empty;
-                        currentBallVelocity = newVelocity;
-                        newBallLocation = currentBallLocation + currentBallVelocity;
-                    }
-                }
+                return currentBallLocation.X.CompareTo(currentPaddleLocation.X);
             }
             void OutputWritten(BigInteger output)
             {
                 int intput = (int)output;
-                //Console.WriteLine(intput);
                 switch (outputs % 3)
                 {
                     case 0:
@@ -113,26 +93,10 @@ namespace AdventOfCode2019.Problems
                 outputs++;
             }
 
-
             void PrintGrid()
             {
                 Console.SetCursorPosition(0, startingRow);
-
-                var builder = new StringBuilder();
-                for (int y = 0; y < 25; y++)
-                {
-                    for (int x = 0; x < 50; x++)
-                        builder.Append(grid[x, y] switch
-                        {
-                            TileType.Empty => ' ',
-                            TileType.Wall => '#',
-                            TileType.Block => '+',
-                            TileType.HorizontalPaddle => '_',
-                            TileType.Ball => 'O',
-                        });
-                    builder.AppendLine();
-                }
-                Console.Write(builder.ToString());
+                grid.PrintGrid();
             }
         }
 
@@ -147,5 +111,23 @@ namespace AdventOfCode2019.Problems
 
         private delegate void GeneralFunction(IntcodeComputer computer);
         private delegate T Returner<T>(Dictionary<TileType, int> tileCounts, int score);
+
+        private sealed class GameGrid : PrintableGrid<TileType>
+        {
+            public GameGrid(int both) : base(both) { }
+            public GameGrid(int width, int height) : base(width, height) { }
+
+            protected override Dictionary<TileType, char> GetPrintableCharacters()
+            {
+                return new Dictionary<TileType, char>
+                {
+                    { TileType.Empty , ' ' },
+                    { TileType.Wall , '#' },
+                    { TileType.Block , '+' },
+                    { TileType.HorizontalPaddle , '_' },
+                    { TileType.Ball , 'O' },
+                };
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AdventOfCode2019.Utilities;
 using AdventOfCode2019.Utilities.TwoDimensions;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
@@ -19,15 +20,15 @@ namespace AdventOfCode2019.Problems
         public override int RunPart1() => General(Part1GeneralFunction, Part1Returner);
         public override string RunPart2() => General(Part2GeneralFunction, Part2Returner);
 
-        private void Part1GeneralFunction(PanelColor[,] grid, Location2D startingLocation) { }
-        private void Part2GeneralFunction(PanelColor[,] grid, Location2D startingLocation)
+        private void Part1GeneralFunction(PanelGrid grid, Location2D startingLocation) { }
+        private void Part2GeneralFunction(PanelGrid grid, Location2D startingLocation)
         {
             var (x, y) = startingLocation;
             grid[x, y] = PanelColor.White;
         }
 
-        private int Part1Returner(int paintedPanels, PanelColor[,] grid) => paintedPanels;
-        private string Part2Returner(int paintedPanels, PanelColor[,] grid)
+        private int Part1Returner(int paintedPanels, PanelGrid grid) => paintedPanels;
+        private string Part2Returner(int paintedPanels, PanelGrid grid)
         {
             var builder = new StringBuilder();
             for (int y = 0; y < gridSize; y++)
@@ -41,7 +42,7 @@ namespace AdventOfCode2019.Problems
 
         private T General<T>(GeneralFunction beforeOperation, Returner<T> returner)
         {
-            var grid = new PanelColor[gridSize, gridSize];
+            var grid = new PanelGrid(gridSize);
             for (int x = 0; x < gridSize; x++)
                 for (int y = 0; y < gridSize; y++)
                     grid[x, y] = PanelColor.Untouched;
@@ -102,7 +103,22 @@ namespace AdventOfCode2019.Problems
             Untouched = 1 << 2,
         }
 
-        private delegate void GeneralFunction(PanelColor[,] grid, Location2D startingLocation);
-        private delegate T Returner<T>(int paintedPanels, PanelColor[,] grid);
+        private delegate void GeneralFunction(PanelGrid grid, Location2D startingLocation);
+        private delegate T Returner<T>(int paintedPanels, PanelGrid grid);
+
+        private sealed class PanelGrid : PrintableGrid<PanelColor>
+        {
+            public PanelGrid(int both) : base(both) { }
+            public PanelGrid(int width, int height) : base(width, height) { }
+
+            protected override Dictionary<PanelColor, char> GetPrintableCharacters()
+            {
+                return new Dictionary<PanelColor, char>
+                {
+                    { PanelColor.Black, '.' },
+                    { PanelColor.White, '#' },
+                };
+            }
+        }
     }
 }
