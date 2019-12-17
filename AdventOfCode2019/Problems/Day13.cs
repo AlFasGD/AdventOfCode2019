@@ -14,8 +14,8 @@ namespace AdventOfCode2019.Problems
         private void Part1GeneralFunction(IntcodeComputer computer) { }
         private void Part2GeneralFunction(IntcodeComputer computer) => computer.SetStaticMemoryAt(0, 2);
 
-        private int Part1Returner(Dictionary<TileType, int> tileCounts, int score) => tileCounts[TileType.Block];
-        private int Part2Returner(Dictionary<TileType, int> tileCounts, int score) => score;
+        private int Part1Returner(ValueCounterDictionary<TileType> tileCounts, int score) => tileCounts[TileType.Block];
+        private int Part2Returner(ValueCounterDictionary<TileType> tileCounts, int score) => score;
 
         private T General<T>(GeneralFunction beforeOperation, Returner<T> returner)
         {
@@ -26,14 +26,6 @@ namespace AdventOfCode2019.Problems
             bool gameStarted = false;
 
             var currentLocation = new Location2D();
-            var tileCounts = new Dictionary<TileType, int>
-            {
-                { TileType.Empty, 0 },
-                { TileType.Wall, 0 },
-                { TileType.Block, 0 },
-                { TileType.HorizontalPaddle, 0 },
-                { TileType.Ball, 0 },
-            };
             int score = 0;
 
             var currentBallLocation = new Location2D();
@@ -48,7 +40,7 @@ namespace AdventOfCode2019.Problems
 
             computer.RunToHalt();
 
-            return returner(tileCounts, score);
+            return returner(grid.ValueCounters, score);
 
             BigInteger InputRequested()
             {
@@ -74,9 +66,7 @@ namespace AdventOfCode2019.Problems
                         else
                         {
                             var (x, y) = currentLocation;
-                            tileCounts[grid[x, y]]--;
-                            tileCounts[grid[x, y] = (TileType)intput]++;
-                            switch (grid[x, y])
+                            switch (grid[x, y] = (TileType)intput)
                             {
                                 case TileType.Ball:
                                     if (gameStarted)
@@ -110,7 +100,7 @@ namespace AdventOfCode2019.Problems
         }
 
         private delegate void GeneralFunction(IntcodeComputer computer);
-        private delegate T Returner<T>(Dictionary<TileType, int> tileCounts, int score);
+        private delegate T Returner<T>(ValueCounterDictionary<TileType> tileCounts, int score);
 
         private sealed class GameGrid : PrintableGrid<TileType>
         {

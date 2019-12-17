@@ -11,15 +11,15 @@ namespace AdventOfCode2019.Problems
         public override int RunPart1() => General(Part1GeneralFunction);
         public override int RunPart2() => General(Part2GeneralFunction);
 
-        private int Part1GeneralFunction(AsteroidGrid asteroids, AsteroidGrid bestSolution, int asteroidCount, int maxVisibleAsteroids)
+        private int Part1GeneralFunction(AsteroidGrid asteroids, AsteroidGrid bestSolution)
         {
             bestSolution.PrintGrid();
-            return maxVisibleAsteroids;
+            return bestSolution.AsteroidCount;
         }
-        private int Part2GeneralFunction(AsteroidGrid asteroids, AsteroidGrid bestSolution, int asteroidCount, int maxVisibleAsteroids)
+        private int Part2GeneralFunction(AsteroidGrid asteroids, AsteroidGrid bestSolution)
         {
             asteroids.PrintGrid();
-            if (asteroidCount < 200)
+            if (asteroids.AsteroidCount < 200)
                 return 0;
 
             asteroids.SetBestLocation(false);
@@ -60,14 +60,10 @@ namespace AdventOfCode2019.Problems
             int width = lines[0].Length;
 
             var asteroids = new AsteroidGrid(width, height);
-            int asteroidCount = 0;
 
             for (int x = 0; x < width; x++)
                 for (int y = 0; y < height; y++)
-                    if (asteroids[x, y] = lines[y][x] == '#')
-                        asteroidCount++;
-
-            int maxVisibleAsteroids = 0;
+                    asteroids[x, y] = lines[y][x] == '#';
 
             var bestSolution = new AsteroidGrid(0, 0);
             Location2D bestLocation = (0, 0);
@@ -78,13 +74,7 @@ namespace AdventOfCode2019.Problems
                     if (!asteroids[x, y])
                         continue;
 
-                    int visibleAsteroidCount = asteroidCount - 1;
-
-                    var currentlyVisibleAsteroids = new AsteroidGrid(width, height);
-                    for (int x0 = 0; x0 < width; x0++)
-                        for (int y0 = 0; y0 < height; y0++)
-                            currentlyVisibleAsteroids[x0, y0] = asteroids[x0, y0];
-
+                    var currentlyVisibleAsteroids = new AsteroidGrid(asteroids);
                     currentlyVisibleAsteroids[x, y] = false;
 
                     for (int x0 = 0; x0 < width; x0++)
@@ -103,31 +93,27 @@ namespace AdventOfCode2019.Problems
                             while (IsValidIndex(x1 = x + multiplier * xDelta, width) && IsValidIndex(y1 = y + multiplier * yDelta, height))
                             {
                                 if (foundFirst && currentlyVisibleAsteroids[x1, y1])
-                                {
-                                    visibleAsteroidCount--;
                                     currentlyVisibleAsteroids[x1, y1] = false;
-                                }
                                 foundFirst |= currentlyVisibleAsteroids[x1, y1];
                                 multiplier++;
                             }
                         }
 
-                    if (visibleAsteroidCount > maxVisibleAsteroids)
+                    if (currentlyVisibleAsteroids.AsteroidCount > bestSolution.AsteroidCount)
                     {
                         bestSolution = currentlyVisibleAsteroids;
                         bestLocation = (x, y);
-                        maxVisibleAsteroids = visibleAsteroidCount;
                     }
                 }
 
             bestSolution.BestLocation = asteroids.BestLocation = bestLocation;
 
-            return generalFunction(asteroids, bestSolution, asteroidCount, maxVisibleAsteroids);
+            return generalFunction(asteroids, bestSolution);
         }
 
         private static bool IsValidIndex(int value, int upperBound) => value >= 0 && value < upperBound;
 
-        private delegate int GeneralFunction(AsteroidGrid asteroids, AsteroidGrid bestSolution, int asteroidCount, int maxVisibleAsteroids);
+        private delegate int GeneralFunction(AsteroidGrid asteroids, AsteroidGrid bestSolution);
 
         private class SlopedLocation : IComparable<SlopedLocation>
         {
@@ -164,7 +150,10 @@ namespace AdventOfCode2019.Problems
         {
             public Location2D BestLocation;
 
+            public int AsteroidCount => ValueCounters[true];
+
             public AsteroidGrid(int width, int height) : base(width, height) { }
+            public AsteroidGrid(AsteroidGrid other) : base(other) { }
 
             protected override Dictionary<bool, char> GetPrintableCharacters()
             {

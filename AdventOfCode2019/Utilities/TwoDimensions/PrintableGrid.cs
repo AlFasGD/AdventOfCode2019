@@ -10,13 +10,23 @@ namespace AdventOfCode2019.Utilities.TwoDimensions
 
         protected T[,] Grid;
 
+        public readonly ValueCounterDictionary<T> ValueCounters;
         public readonly int Width, Height;
 
         public PrintableGrid(int both) : this(both, both) { }
         public PrintableGrid(int width, int height)
         {
             printableCharacters = GetPrintableCharacters();
-            Grid = new T[Width = width, Height = height];
+            ValueCounters = new ValueCounterDictionary<T>(Grid = new T[Width = width, Height = height]);
+        }
+        public PrintableGrid(PrintableGrid<T> other)
+            : this(other.Width, other.Height)
+        {
+            for (int x = 0; x < Width; x++)
+                for (int y = 0; y < Height; y++)
+                    Grid[x, y] = other.Grid[x, y];
+            foreach (var v in other.ValueCounters)
+                ValueCounters.Add(v);
         }
 
         public virtual void PrintGrid() => Console.WriteLine(ToString());
@@ -26,12 +36,16 @@ namespace AdventOfCode2019.Utilities.TwoDimensions
         public T this[int x, int y]
         {
             get => Grid[x, y];
-            set => Grid[x, y] = value;
+            set
+            {
+                ValueCounters.AdjustValue(Grid[x, y], value);
+                Grid[x, y] = value;
+            }
         }
         public T this[Location2D location]
         {
-            get => Grid[location.X, location.Y];
-            set => Grid[location.X, location.Y] = value;
+            get => this[location.X, location.Y];
+            set => this[location.X, location.Y] = value;
         }
 
         public sealed override string ToString()
