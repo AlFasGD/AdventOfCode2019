@@ -93,10 +93,8 @@ namespace AdventOfCode2019.Problems
             public long ProduceAllCapableFuel()
             {
                 // TODO: OPTIMIZE
-                long fuel = 0;
-                while (ProduceFuel() != -2)
-                    fuel++;
-                return fuel;
+                while (ProduceFuel() != -2);
+                return this["FUEL"].Amount;
             }
             public long ProduceFuel() => ProduceFuel(1);
             public long ProduceFuel(int amount) => ProduceIngredient(new ChemicalIngredient(amount, Values.Where(i => i.Chemical.Name == "FUEL").First().Chemical));
