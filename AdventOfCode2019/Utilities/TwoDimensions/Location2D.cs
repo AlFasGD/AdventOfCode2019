@@ -8,6 +8,8 @@ namespace AdventOfCode2019.Utilities.TwoDimensions
         public int X { get; set; }
         public int Y { get; set; }
 
+        public bool IsPositive => X > 0 && Y > 0;
+        public bool IsNonNegative => X >= 0 && Y >= 0;
         public bool IsCenter => (X | Y) == 0;
         public int ValueSum => X + Y;
         public int ManhattanDistanceFromCenter => Absolute.ValueSum;
@@ -21,6 +23,7 @@ namespace AdventOfCode2019.Utilities.TwoDimensions
 
         IHasX IHasX.InvertX => InvertX;
         IHasY IHasY.InvertY => InvertY;
+
 
         public Location2D(int a) => X = Y = a;
         public Location2D(int x, int y) => (X, Y) = (x, y);

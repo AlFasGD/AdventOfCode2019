@@ -11,6 +11,8 @@ namespace AdventOfCode2019.Utilities.ThreeDimensions
         public int Y { get; set; }
         public int Z { get; set; }
 
+        public bool IsPositive => X > 0 && Y > 0 && Z > 0;
+        public bool IsNonNegative => X >= 0 && Y >= 0 && Z >= 0;
         public bool IsCenter => (X | Y | Z) == 0;
         public int ValueSum => X + Y + Z;
         public int ManhattanDistanceFromCenter => Absolute.ValueSum;

@@ -11,17 +11,19 @@ namespace AdventOfCode2019.Utilities
 
         public const int MaxParameterCount = 3;
 
-        private BigInteger[] memory;
+        private BigInteger[] staticMemory;
+        private BigInteger[] memory = new BigInteger[100000];
 
         private List<BigInteger> buffer = new List<BigInteger>();
-        private int bufferIndex = 0;
-        private int relativeModeOffset = 0;
-        private BigInteger[] numbers = new BigInteger[100000];
-        private int executionPointer = 0;
         private BigInteger lastOutput;
 
-        private VMState state;
+        private int bufferIndex = 0;
+        private int relativeModeOffset = 0;
+        private int executionPointer = 0;
 
+        private VMState state = VMState.Standby;
+
+        public bool IsStandby => state == VMState.Standby;
         public bool IsRunning => state == VMState.Running;
         public bool IsPaused => state == VMState.Paused;
         public bool IsHalted => state == VMState.Halted;
@@ -39,17 +41,17 @@ namespace AdventOfCode2019.Utilities
         public IntcodeComputer() { }
         public IntcodeComputer(int[] m)
         {
-            memory = new BigInteger[m.Length];
+            staticMemory = new BigInteger[m.Length];
             for (int i = 0; i < m.Length; i++)
-                memory[i] = m[i];
+                staticMemory[i] = m[i];
         }
-        public IntcodeComputer(BigInteger[] m) => memory = m;
+        public IntcodeComputer(BigInteger[] m) => staticMemory = m;
         public IntcodeComputer(string s)
         {
             var code = s.Split(',');
-            memory = new BigInteger[code.Length];
+            staticMemory = new BigInteger[code.Length];
             for (int i = 0; i < code.Length; i++)
-                memory[i] = BigInteger.Parse(code[i]);
+                staticMemory[i] = BigInteger.Parse(code[i]);
         }
 
         public BigInteger RunToHalt(BigInteger[] m = null, params BigInteger[] inputBuffer) => Run(false, m, inputBuffer);
@@ -61,23 +63,23 @@ namespace AdventOfCode2019.Utilities
             if (!IsPaused)
             {
                 if (m == null)
-                    m = memory;
+                    m = staticMemory;
                 for (int k = 0; k < m.Length; k++)
-                    numbers[k] = m[k];
+                    memory[k] = m[k];
             }
 
             state = VMState.Running;
 
             while (true)
             {
-                var opcode = (Opcode)(int)(numbers[executionPointer] % 100);
+                var opcode = (Opcode)(int)(memory[executionPointer] % 100);
                 if (opcode == Opcode.Halt)
                     break;
 
                 var parameterModes = new ParameterMode[MaxParameterCount];
                 int d = 100;
                 for (int a = 0; a < MaxParameterCount; a++, d *= 10)
-                    parameterModes[a] = (ParameterMode)(int)(numbers[executionPointer] / d % 10);
+                    parameterModes[a] = (ParameterMode)(int)(memory[executionPointer] / d % 10);
 
                 bool pointerChanged = false;
                 bool shouldReturn = false;
@@ -135,16 +137,16 @@ namespace AdventOfCode2019.Utilities
                         Opcode.SetRelativeOffset => relativeModeOffset + GetArgument(0),
                     };
                 }
-                BigInteger GetArgument(int index) => numbers[GetAddressFromArgument(index)];
-                void WriteResult(int index, BigInteger result) => numbers[GetAddressFromArgument(index)] = result;
+                BigInteger GetArgument(int index) => memory[GetAddressFromArgument(index)];
+                void WriteResult(int index, BigInteger result) => memory[GetAddressFromArgument(index)] = result;
                 int GetAddressFromArgument(int index)
                 {
                     int offset = executionPointer + index + 1;
                     return parameterModes[index] switch
                     {
-                        ParameterMode.Position => (int)numbers[offset],
+                        ParameterMode.Position => (int)memory[offset],
                         ParameterMode.Intermediate => offset,
-                        ParameterMode.Relative => relativeModeOffset + (int)numbers[offset],
+                        ParameterMode.Relative => relativeModeOffset + (int)memory[offset],
                     };
                 }
                 int GetPointerIncrement() => argumentCounts[opcode] + 1;
@@ -155,12 +157,22 @@ namespace AdventOfCode2019.Utilities
             return lastOutput;
         }
 
-        public void BufferInput(BigInteger input) => buffer.Add(input);
+        public void Reset()
+        {
+            buffer.Clear();
+            bufferIndex = 0;
+            relativeModeOffset = 0;
+            executionPointer = 0;
+            state = VMState.Standby;
+        }
 
-        public BigInteger GetMemoryAt(int address) => numbers[address];
-        public void SetMemoryAt(int address, BigInteger value) => numbers[address] = value;
-        public BigInteger GetStaticMemoryAt(int address) => memory[address];
-        public void SetStaticMemoryAt(int address, BigInteger value) => memory[address] = value;
+        public void BufferInput(BigInteger input) => buffer.Add(input);
+        public void BufferInput(params BigInteger[] input) => buffer.AddRange(input);
+
+        public BigInteger GetMemoryAt(int address) => memory[address];
+        public void SetMemoryAt(int address, BigInteger value) => memory[address] = value;
+        public BigInteger GetStaticMemoryAt(int address) => staticMemory[address];
+        public void SetStaticMemoryAt(int address, BigInteger value) => staticMemory[address] = value;
 
         private BigInteger ReadInput()
         {
@@ -210,6 +222,7 @@ namespace AdventOfCode2019.Utilities
 
     public enum VMState
     {
+        Standby,
         Running,
         Paused,
         Halted,

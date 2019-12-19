@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-
-namespace AdventOfCode2019.Utilities
+﻿namespace AdventOfCode2019.Utilities
 {
     public interface ILocation
     {
+        bool IsPositive { get; }
+        bool IsNonNegative { get; }
         bool IsCenter { get; }
         int ValueSum { get; }
         int ManhattanDistanceFromCenter { get; }
