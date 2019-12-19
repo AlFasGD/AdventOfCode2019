@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using AdventOfCode2019.Functions;
+using System.IO;
 using System.Linq;
 
 namespace AdventOfCode2019
@@ -14,7 +15,7 @@ namespace AdventOfCode2019
         public int TestCaseFiles => Directory.GetFiles("AoC2019").Where(f => f.Replace('\\', '/').Split('/').Last().StartsWith($"{Day}T")).Count();
 
         private string GetFileContents(int testCase) => File.ReadAllText(GetFileLocation(testCase));
-        private string[] GetFileLines(int testCase) => GetFileContents(testCase).Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
+        private string[] GetFileLines(int testCase) => GetFileContents(testCase).GetLines();
 
         private string GetFileLocation(int testCase) => $"AoC2019/{Day}{(testCase > 0 ? $"T{testCase}" : "")}.txt";
     }
