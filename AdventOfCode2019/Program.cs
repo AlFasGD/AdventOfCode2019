@@ -7,7 +7,7 @@ namespace AdventOfCode2019
     {
         public static void Main(string[] args)
         {
-            RunProblem(new Day14());
+            RunProblem(new Day19());
         }
 
         private static void RunProblem<T1, T2>(Problem<T1, T2> instance)
